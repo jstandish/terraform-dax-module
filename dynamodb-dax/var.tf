@@ -1,5 +1,6 @@
-variable "dynamodb_table" {
-  type = string
+variable "dynamodb_table_arns" {
+  type = list
+  description = "List of table ARNs that we are allowed to work with"
 }
 
 variable "cluster_name" {

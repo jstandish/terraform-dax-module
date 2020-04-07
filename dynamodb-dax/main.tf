@@ -41,7 +41,7 @@ resource "aws_iam_role_policy" "dax_access_policy" {
             "dynamodb:ConditionCheckItem"
         ],
         "Effect": "Allow",
-        "Resource": "${var.dynamodb_table}"
+        "Resource": ["${join(", ", var.dynamodb_table_arns)}"]
       }
     ]
   }
@@ -55,23 +55,23 @@ resource "aws_dax_subnet_group" "subnets" {
 
 resource "aws_security_group" "allow_communication" {
   name        = "Allow DAX Communication"
-  description = "Allow TLS inbound traffic"
+  description = "Allow DAX inbound traffic"
   vpc_id      = "${var.vpc_id}"
 
   ingress {
     description = "TLS from VPC"
-    from_port   = 443
-    to_port     = 443
+    from_port   = 881
+    to_port     = 881
     protocol    = "tcp"
     security_groups = "${var.src_security_group_ids}"
-    cidr_blocks = "${var.security_group_ingress_cidr_blocks}"
+    cidr_blocks = var.security_group_ingress_cidr_blocks
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = "${var.security_group_ingress_cidr_blocks}"
+    cidr_blocks = var.security_group_egress_cidr_blocks
   }
 
   tags = "${var.tags}"
