@@ -61,6 +61,13 @@ module "dax" {
 }
 ```
 
+## Outputs
+* `arn` - The ARN of the DAX cluster
+* `nodes` - List of node objects including id, address, port and availability_zone. Referenceable e.g. as ${aws_dax_cluster.test.nodes.0.address}
+* `configuration_endpoint` - The configuration endpoint for this DAX cluster, consisting of a DNS name and a port number
+* `cluster_address` - The DNS name of the DAX cluster without the port appended
+* `port` - The port used by the configuration endpoint
+* `security_group_id` - The security group wrapping the DAX cluster
 ## Resources Created
 - DAX Cluster
 - DAX Subnet Group
