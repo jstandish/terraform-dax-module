@@ -1,10 +1,28 @@
-resource "aws_iam_service_linked_role" "dax" {
-  aws_service_name = "dax.amazonaws.com"
+resource "aws_iam_role" "dax_service_access_role" {
+  name = "dax_service_access_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "dax.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+
+  tags = "${var.tags}"
 }
 
 resource "aws_iam_role_policy" "dax_access_policy" {
   name = "dax-access-policy"
-  role = "${aws_iam_service_linked_role.dax.arn}"
+  role = "${aws_iam_role.dax_service_access_role.name}"
   policy = <<-EOF
   {
     "Version": "2012-10-17",
@@ -60,7 +78,7 @@ resource "aws_security_group" "allow_communication" {
 }
 resource "aws_dax_cluster" "cluster" {
   cluster_name       = "${var.cluster_name}"
-  iam_role_arn       = "${aws_iam_service_linked_role.dax.arn}"
+  iam_role_arn       = "${aws_iam_role.dax_service_access_role.arn}"
   node_type          = "${var.node_type}"
   replication_factor = "${var.replication_factor}"
   subnet_group_name = "${aws_dax_subnet_group.subnets.id}"
